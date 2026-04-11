@@ -1,3 +1,8 @@
+import streamlit as st
+
+
+
+
 st.title("강원 청소년 생활 도우미")
 st.write("강원도에서 공부, 식사, 휴식에 도움이 되는 장소를 추천합니다")
 
