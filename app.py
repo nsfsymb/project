@@ -14,8 +14,8 @@ def get_recommendations(data, region):
             result.append(place)
     return result
 
-st.title("강원 청소년 생활 도우미")
-region = st.selectbox("지역을 선택하세요", ["강릉", "속초", "춘천"])
+st.title("*강원 청소년 생활 도우미*")
+region = st.selectbox("지역을 선택하세요", ["강릉","양양","속초","춘천"])
 
 if st.button("추천 보기"):
     recommendations = get_recommendations(places, region)
