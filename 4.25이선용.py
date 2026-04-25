@@ -49,7 +49,13 @@ if menu == "전체 보기":
 elif menu == "추천 받기":
     region = st.selectbox("지역을 선택하세요", ["강릉", "속초", "춘천"])
     place_type = st.selectbox("실내/실외를 선택하세요", ["실내", "실외"])
-    budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, step=1000, value=5000)
+    is_free = st.checkbox("무료 장소만 찾고 싶어요")
+
+    if is_free:
+        budget = 0
+        st.write("무료 장소**를 검색합니다.")
+    else:
+        budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, step=1000, value=5000)
 
     result_places = find_places(placelist, region, place_type, budget)
 
