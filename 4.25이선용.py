@@ -39,7 +39,8 @@ def add_place(place_list, name, region, place_type, budget, description):
     place_list.append(new_place)
 
 
-st.title("강원생활도우미앱")
+st.markdown("# 🏔️ :blue[강원] 생활 도우미")
+st.divider()
 
 menu = st.selectbox("기능을 선택하세요", ["전체 보기", "추천 받기", "장소 추가"])
 
@@ -53,7 +54,7 @@ elif menu == "추천 받기":
 
     if is_free:
         budget = 0
-        st.write("무료 장소**를 검색합니다.")
+        st.write("무료 장소를 검색합니다.")
     else:
         budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, step=1000, value=5000)
 
