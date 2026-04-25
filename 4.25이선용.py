@@ -82,5 +82,5 @@ elif menu == "장소 추가":
 
     if st.button("장소 추가"):
         # 아래 함수 호출을 완성하세요
-        add_place(placelist, name, region, place_type, budget, description)
+        add_place(st.session_state.placelist, name, region, place_type, budget, description)
         st.success("새 장소가 추가되었습니다")
