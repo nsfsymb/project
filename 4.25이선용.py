@@ -56,7 +56,7 @@ elif menu == "추천 받기":
     st.subheader("추천 결과")
 
     # 아래 빈칸을 완성하세요
-    if if len(result_places) > 0:
+    if len(result_places) > 0:
         for place in result_places:
             st.write("장소 이름:", place["이름"])
             st.write("설명:", place["한줄설명"])
