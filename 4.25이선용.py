@@ -56,7 +56,7 @@ elif menu == "추천 받기":
     st.subheader("추천 결과")
 
     # 아래 빈칸을 완성하세요
-    if __________________________________:
+    if if len(result_places) > 0:
         for place in result_places:
             st.write("장소 이름:", place["이름"])
             st.write("설명:", place["한줄설명"])
@@ -74,5 +74,5 @@ elif menu == "장소 추가":
 
     if st.button("장소 추가"):
         # 아래 함수 호출을 완성하세요
-        ______________________________________________
+        add_place(placelist, name, region, place_type, budget, description)
         st.success("새 장소가 추가되었습니다")
