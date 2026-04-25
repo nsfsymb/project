@@ -20,7 +20,7 @@ def show_all_places(place_list):
         st.write("---")
 
 
-def find_places(placelist, region, place_type, budget):
+def find_places(st.session_state.placelist, region, place_type, budget):
     result = []
     for place in place_list:
         # 아래 조건문을 완성하세요
