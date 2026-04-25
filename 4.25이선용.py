@@ -59,7 +59,7 @@ elif menu == "추천 받기":
     else:
         budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, step=1000, value=5000)
 
-    result_places = find_places(placelist, region, place_type, budget)
+    result_places = find_places(st.session_state.placelist, region, place_type, budget)
 
     st.subheader("추천 결과")
 
