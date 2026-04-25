@@ -46,7 +46,7 @@ st.divider()
 menu = st.selectbox("기능을 선택하세요", ["전체 보기", "추천 받기", "장소 추가"])
 
 if menu == "전체 보기":
-    show_all_places(placelist)
+    show_all_places(st.session_state.placelist)
 
 elif menu == "추천 받기":
     region = st.selectbox("지역을 선택하세요", ["강릉", "속초", "춘천"])
