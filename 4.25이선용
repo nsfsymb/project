@@ -23,7 +23,7 @@ def find_places(place_list, region, place_type, budget):
     result = []
     for place in place_list:
         # 아래 조건문을 완성하세요
-        if ______________________________________________:
+        if ["지역"] == region and place["실내여부"] == place_type and place["예산"] <= budget:
             result.append(place)
     return result
 
