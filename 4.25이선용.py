@@ -30,11 +30,11 @@ def find_places(place_list, region, place_type, budget):
 
 def add_place(place_list, name, region, place_type, budget, description):
     new_place = {
-        "이름": ____________________,
-        "지역": ____________________,
-        "실내여부": ____________________,
-        "예산": ____________________,
-        "한줄설명": ____________________
+        "이름": name,
+        "지역": region,
+        "실내여부": place_type,
+        "예산": budget,
+        "한줄설명": description
     }
     place_list.append(new_place)
 
