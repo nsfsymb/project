@@ -16,3 +16,18 @@ if uploaded_file is not None:
     st.dataframe(df)
 else:
     st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다.")
+
+selected_region = st.selectbox("지역을 선택하세요", df["지역"].unique())
+selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000)
+
+result = df[
+    (df["지역"] == selected_region) &
+    (df["예산"] <= selected_budget)
+]
+
+st.subheader("추천 결과")
+
+if len(result) > 0:
+    st.dataframe(result)
+else:
+    st.warning("조건에 맞는 장소가 없습니다.")
