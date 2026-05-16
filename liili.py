@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-
+def load_data()
 st.title("강원생활도우미앱 2.0")
 st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있습니다.")
 
