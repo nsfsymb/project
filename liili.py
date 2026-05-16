@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+st.cache_data
 def load_data()
 
 st.title("강원생활도우미앱 2.0")
