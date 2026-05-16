@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 
-def load_data(file):
-    return pd.read_excel(file)
+def load_data(uploaded_file):
+    df = pd.read_excel(uploaded_file)
+    return df
 
 def show_data(df):
-    st.subheader("업로드한 장소 데이터")
+    st.subheader("업로드된 장소 목록")
     st.dataframe(df)
     
 st.title("강원생활도우미앱 2.0")
