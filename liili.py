@@ -21,8 +21,9 @@ if uploaded_file is not None:
 df = load_data(uploaded_file)
     show_data(df)
 
-    st.subheader("업로드한 장소 데이터")
-    st.dataframe(df)
+st.subheader("업로드한 장소 데이터")
+st.dataframe(df)
+
 else:
     st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다.")
 
