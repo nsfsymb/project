@@ -1,7 +1,14 @@
 import streamlit as st
 import pandas as pd
 
+st.cache_data
+def load_data(file):
+    return pd.read_excel(file)
 
+def show_data(df):
+    st.subheader("업로드한 장소 데이터")
+    st.dataframe(df)
+    
 st.title("강원생활도우미앱 2.0")
 st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있습니다.")
 
@@ -12,6 +19,7 @@ uploaded_file = st.file_uploader(
 
 if uploaded_file is not None:
     df = pd.read_excel(uploaded_file)
+    show_data(df)
 
     st.subheader("업로드한 장소 데이터")
     st.dataframe(df)
