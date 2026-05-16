@@ -24,9 +24,6 @@ if uploaded_file is not None:
     st.subheader("업로드한 장소 데이터")
     st.dataframe(df)
 
-else:
-    st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다.")
-
     selected_region = st.selectbox("지역을 선택하세요", df["지역"].unique())
     selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000)
 
@@ -56,3 +53,6 @@ else:
 
     st.subheader("지역별 평균 평점")
     st.bar_chart(avg_score)
+
+else:
+    st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다.")
