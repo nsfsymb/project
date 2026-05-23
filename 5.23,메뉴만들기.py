@@ -16,7 +16,7 @@ def print_table(table, table_name):
     else:
         st.warning("출력할 장소가 없습니다")
 
-ef get_user_input(df):
+def get_user_input(df):
     selected_region = st.selectbox("지역을 선택하세요", df["지역"].unique())
     selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000) # 깔끔하게 정렬!
     result = df[
