@@ -49,19 +49,16 @@ df = load_file()
 
 if df is not None:
     st.sidebar.markdown("---")
-    st.sidebar.header("🗺️ 기능 메뉴")
+    st.sidebar.header("ㅊ기능 메뉴")
 menu = st.sidebar.radio(
         "원하는 기능을 선택하세요",
         ["전체 데이터 보기", "조건별 장소 검색"]
     )
     st.sidebar.markdown("---")
     
-    if menu == "전체 데이터 보기":
+if menu == "전체 데이터 보기":
         print_table(df, "업로드한 장소 데이터 전체 목록")
         
-    elif menu == "🔍 조건별 장소 검색":
+    elif menu == "조건별 장소 검색":
         result = get_user_input(df)
-        show_filter_places(result, df)menu = st.sidebar.radio(
-        "원하는 기능을 선택하세요",
-        ["전체 데이터 보기", "조건별 장소 검색"]
-    )
+        show_filter_places(result, df)
