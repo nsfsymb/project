@@ -8,6 +8,7 @@ def load_file():
         return df
     else:
         st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다")
+        return None
 
 def print_table(table, table_name):
     st.subheader(table_name)
@@ -30,7 +31,6 @@ def show_filter_places(result, df):
         st.dataframe(result)
     else:
         st.warning("조건에 맞는 장소가 없습니다.")
-    region_count = df["지역"].value_counts()
 
 def count_chart(df, key):
     key_count = df[key].value_counts()
