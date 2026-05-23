@@ -49,7 +49,7 @@ def add_region_ui():
     new_place = st.text_input("장소 이름")
     new_budget = st.number_input("예산", min_value=0, value=0, step=1000)
     new_type = st.text_input("유형")
-    new_score = st.number_input("평점"), min_value=0.0, max_value=5.0, value=4.5, step=0.1)
+    new_score = st.number_input("평점", min_value=0.0, max_value=5.0, value=4.5, step=0.1)
     
     if st.button("데이터 등록하기"):
         if new_region.strip() == "" or new_place.strip() == "":
