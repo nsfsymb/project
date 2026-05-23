@@ -7,7 +7,7 @@ def load_file():
         df = pd.read_excel(uploaded_file)
         return df
     else:
-        st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다"
+        st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다")
 
 def print_table(table, table_name):
     st.subheader(table_name)
@@ -25,21 +25,21 @@ def get_user_input(df):
     ]
     return result
 
-def show_filter_places(result):
+def show_filter_places(result, df):
     if len(result) > 0:
         st.dataframe(result)
     else:
         st.warning("조건에 맞는 장소가 없습니다.")
     region_count = df["지역"].value_counts()
 
-def count_chart(key):
+def count_chart(df, key):
     key_count = df[key].value_counts()
-    st.subheader(key+"별 장소 개수")
+    st.subheader(key + "별 장소 개수")
     st.bar_chart(key_count)
 
-def average_chart(group, num):
+def average_chart(df, group, num):
     avg_score = df.groupby(group)[num].mean()
-    st.subheader(group+"별 평균"+num)
+    st.subheader(group + "별 평균 " + num)
     st.bar_chart(avg_score)
 
 st.title("강생도 2.0")
@@ -47,9 +47,9 @@ st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있
 
 df = load_file()
 if df is not None:
-    print_table(df,"업로드한 장소 데이더")
-    result = get_user_input()
-    show_filter_places(result)
-    count_chart("지역")
-    count_chart("유형")
-    average_chart("지역","평점")
+    print_table(df,"업로드한 장소 데이")
+    result = get_user_input(df)
+    show_filter_places(result, df)
+    count_chart(df, "지역")
+    count_chart(df, "유형")
+    average_chart(df, "지역", "평점")
