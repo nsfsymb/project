@@ -43,21 +43,34 @@ def average_chart(df, group, num):
     st.bar_chart(avg_score)
 
 def add_region_ui():
-    st.subheader("지역 추가")
-    new_region = st.text_input("추가할 신규 지역 이름을 입력하세요")
-    if st.button("지역 등록하기"):
-        if new_region.strip() == "":
-            st.error("지역 이름을 입력해주세요.")
-        elif new_region in st.session_state.df["지역"].unique():
-            st.warning("이미 존재하는 지역입니다.")
+    st.subheader("새로운 장소 및 지역 추가")
+    
+    new_region = st.text_input("지역 이름")
+    new_place = st.text_input("장소 이름")
+    new_budget = st.number_input("예산", min_value=0, value=0, step=1000)
+    new_type = st.text_input("유형")
+    new_score = st.number_input("평점"), min_value=0.0, max_value=5.0, value=4.5, step=0.1)
+    
+    if st.button("데이터 등록하기"):
+        if new_region.strip() == "" or new_place.strip() == "":
+            st.error("지역 이름과 장소 이름은 필수 항목입니다.")
         else:
-            new_row = pd.DataFrame([{col: None for col in st.session_state.df.columns}])
-            new_row["지역"] = new_region
+            new_data = {
+                "지역": new_region,
+                "장소명": new_place,
+                "예산": new_budget,
+                "유형": new_type,
+                "평점": new_score
+            }
+            
+            new_row = pd.DataFrame([new_data])
             st.session_state.df = pd.concat([st.session_state.df, new_row], ignore_index=True)
-            st.success("지역이 성공적으로 추가되었습니다.")
+            st.success("새로운 데이터가 성공적으로 추가되었습니다! 전체 데이터 보기 또는 조건별 검색에서 확인해보세요.")
 
 st.title("강생도 2.0")
 st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있습니다.")
+
+df = load_file()
 
 df = load_file()
 
