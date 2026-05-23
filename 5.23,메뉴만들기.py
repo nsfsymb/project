@@ -72,8 +72,6 @@ st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있
 
 df = load_file()
 
-df = load_file()
-
 if df is not None:
     if "df" not in st.session_state:
         st.session_state.df = df
