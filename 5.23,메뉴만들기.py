@@ -91,7 +91,7 @@ if df is not None:
     st.sidebar.header("기능 메뉴")
     menu = st.sidebar.radio(
         "원하는 기능을 선택하세요",
-        ["전체 데이터 보기", "조건별 장소 검색", "지역 추가"]
+        ["전체 데이터 보기", "조건별 장소 검색", "지역 추가", "통계 보기"]
     )
     st.sidebar.markdown("---")
     
@@ -104,3 +104,17 @@ if df is not None:
 
     elif menu == "지역 추가":
         add_region_ui()
+        
+    elif menu == "📊 통계 보기":
+        st.subheader("📊 데이터 통계 분석")
+        tab1, tab2 = st.tabs(["장소 분포", "평점 분석"])
+        
+        with tab1:
+            col_a, col_b = st.columns(2)
+            with col_a:
+                count_chart(st.session_state.df, "지역")
+            with col_b:
+                count_chart(st.session_state.df, "유형")
+                
+        with tab2:
+            average_chart(st.session_state.df, "지역", "평점")
