@@ -18,7 +18,7 @@ def print_table(table, table_name):
 
 def get_user_input(df):
     selected_region = st.selectbox("지역을 선택하세요", df["지역"].unique())
-    selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000) # 깔끔하게 정렬!
+    selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000)
     result = df[
         (df["지역"] == selected_region) &
         (df["예산"] <= selected_budget)
@@ -49,14 +49,14 @@ df = load_file()
 
 if df is not None:
     st.sidebar.markdown("---")
-    st.sidebar.header("ㅊ기능 메뉴")
-menu = st.sidebar.radio(
+    st.sidebar.header("기능 메뉴")
+    menu = st.sidebar.radio(
         "원하는 기능을 선택하세요",
         ["전체 데이터 보기", "조건별 장소 검색"]
     )
-st.sidebar.markdown("---")
+    st.sidebar.markdown("---")
     
-if menu == "전체 데이터 보기":
+    if menu == "전체 데이터 보기":
         print_table(df, "업로드한 장소 데이터 전체 목록")
         
     elif menu == "조건별 장소 검색":
