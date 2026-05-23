@@ -45,15 +45,15 @@ def average_chart(df, group, num):
 def add_region_ui():
     st.subheader("새로운 장소 및 지역 추가")
     
-    new_name = st.text_input("장소 이름 (예: 경포대)")
-    new_region = st.text_input("지역 (예: 강릉)")
-    new_type = st.text_input("유형 (예: 관광, 음식, 카페)")
+    new_name = st.text_input("장소 이름")
+    new_region = st.text_input("지역")
+    new_type = st.text_input("유형")
     new_indoor = st.selectbox("실내여부", ["실내", "실외", "실내외"])
-    new_budget = st.number_input("예산 (원 단위)", min_value=0, value=0, step=1000)
-    new_score = st.number_input("평점 (0.0 ~ 5.0)", min_value=0.0, max_value=5.0, value=4.5, step=0.1)
-    new_purpose = st.text_input("추천목적 (예: 산책, 공부, 데이트)")
-    new_situation = st.text_input("추천상황 (예: 맑은날, 비오는날, 여행)")
-    new_target = st.text_input("추천대상 (예: 가족, 친구, 혼자)")
+    new_budget = st.number_input("예산)", min_value=0, value=0, step=1000)
+    new_score = st.number_input("평점", min_value=0.0, max_value=5.0, value=4.5, step=0.1)
+    new_purpose = st.text_input("추천목적")
+    new_situation = st.text_input("추천상황")
+    new_target = st.text_input("추천대상")
     
     if st.button("데이터 등록하기"):
         if new_region.strip() == "" or new_name.strip() == "":
