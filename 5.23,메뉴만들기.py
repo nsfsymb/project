@@ -2,26 +2,27 @@ import streamlit as st
 import pandas as pd
 
 def load_file():
-    uploaded_file = st.file_uploader("장소 데이터 엑셀 파일을 업로드하세요",type=["xlsx"])
+    uploaded_file = st.file_uploader("장소 데이터 엑셀 파일을 업로드하세요", type=["xlsx"])
     if uploaded_file is not None:
         df = pd.read_excel(uploaded_file)
         return df
     else:
-        st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다")
+        st.info("엑셀 파일을 업로드하면 데이터가 표시됩니다"
 
 def print_table(table, table_name):
     st.subheader(table_name)
-    if len(table)>0:
+    if table is not None and len(table) > 0:
         st.dataframe(table)
     else:
         st.warning("출력할 장소가 없습니다")
 
-def get_user_input():
+def get_user_input(df):
     selected_region = st.selectbox("지역을 선택하세요", df["지역"].unique())
-     selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000)
+   selected_budget = st.number_input("사용 가능한 예산을 입력하세요", min_value=0, value=10000, step=1000)
     result = df[
         (df["지역"] == selected_region) &
-        (df["예산"] <= selected_budget)    ]
+        (df["예산"] <= selected_budget)
+    ]
     return result
 
 def show_filter_places(result):
