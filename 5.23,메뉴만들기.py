@@ -47,9 +47,22 @@ st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있
 
 df = load_file()
 if df is not None:
-    print_table(df,"업로드한 장소 데이")
-    result = get_user_input(df)
+   st.sidebar.markdown("---")
+    st.sidebar.header("🗺️ 기능 메뉴")
     show_filter_places(result, df)
     count_chart(df, "지역")
-    count_chart(df, "유형")
-    average_chart(df, "지역", "평점")
+menu = st.sidebar.radio(
+        "원하는 기능을 선택하세요",
+        ["전체 데이터 보기", "조건별 장소 검색"]
+    )
+    st.sidebar.markdown("---")
+if menu == "전체 데이터 보기":
+        print_table(df, "업로드한 장소 데이터 전체 목록")
+        
+    elif menu == "🔍 조건별 장소 검색":
+        result = get_user_input(df)
+        show_filter_places(result, df)
+    elif menu == "📊 지역/유형별 통계":
+        count_chart(df, "지역")
+        count_chart(df, "유형")
+        average_chart(df, "지역", "평점")
