@@ -45,27 +45,38 @@ def average_chart(df, group, num):
 def add_region_ui():
     st.subheader("새로운 장소 및 지역 추가")
     
-    new_region = st.text_input("지역 이름")
-    new_place = st.text_input("장소 이름")
-    new_budget = st.number_input("예산", min_value=0, value=0, step=1000)
-    new_type = st.text_input("유형")
-    new_score = st.number_input("평점", min_value=0.0, max_value=5.0, value=4.5, step=0.1)
+    new_name = st.text_input("장소 이름 (예: 경포대)")
+    new_region = st.text_input("지역 (예: 강릉)")
+    new_type = st.text_input("유형 (예: 관광, 음식, 카페)")
+    new_indoor = st.selectbox("실내여부", ["실내", "실외", "실내외"])
+    new_budget = st.number_input("예산 (원 단위)", min_value=0, value=0, step=1000)
+    new_score = st.number_input("평점 (0.0 ~ 5.0)", min_value=0.0, max_value=5.0, value=4.5, step=0.1)
+    new_purpose = st.text_input("추천목적 (예: 산책, 공부, 데이트)")
+    new_situation = st.text_input("추천상황 (예: 맑은날, 비오는날, 여행)")
+    new_target = st.text_input("추천대상 (예: 가족, 친구, 혼자)")
     
     if st.button("데이터 등록하기"):
-        if new_region.strip() == "" or new_place.strip() == "":
-            st.error("지역 이름과 장소 이름은 필수 항목입니다.")
+        if new_region.strip() == "" or new_name.strip() == "":
+            st.error("지역과 장소 이름은 필수 항목입니다.")
         else:
+            new_id = int(st.session_state.df["place_id"].max() + 1) if "place_id" in st.session_state.df.columns else 1
+            
             new_data = {
+                "place_id": new_id,
+                "이름": new_name,
                 "지역": new_region,
-                "장소명": new_place,
-                "예산": new_budget,
                 "유형": new_type,
-                "평점": new_score
+                "실내여부": new_indoor,
+                "예산": new_budget,
+                "평점": new_score,
+                "추천목적": new_purpose,
+                "추천상황": new_situation,
+                "추천대상": new_target
             }
             
             new_row = pd.DataFrame([new_data])
             st.session_state.df = pd.concat([st.session_state.df, new_row], ignore_index=True)
-            st.success("새로운 데이터가 성공적으로 추가되었습니다! 전체 데이터 보기 또는 조건별 검색에서 확인해보세요.")
+            st.success("새로운 데이터가 성공적으로 추가되었습니다!")
 
 st.title("강생도 2.0")
 st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있습니다.")
