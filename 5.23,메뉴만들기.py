@@ -54,7 +54,7 @@ menu = st.sidebar.radio(
         "원하는 기능을 선택하세요",
         ["전체 데이터 보기", "조건별 장소 검색"]
     )
-    st.sidebar.markdown("---")
+st.sidebar.markdown("---")
     
     if menu == "전체 데이터 보기":
         print_table(df, "업로드한 장소 데이터 전체 목록")
