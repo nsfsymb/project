@@ -42,23 +42,43 @@ def average_chart(df, group, num):
     st.subheader(group + "별 평균 " + num)
     st.bar_chart(avg_score)
 
+def add_region_ui():
+    st.subheader("지역 추가")
+    new_region = st.text_input("추가할 신규 지역 이름을 입력하세요")
+    if st.button("지역 등록하기"):
+        if new_region.strip() == "":
+            st.error("지역 이름을 입력해주세요.")
+        elif new_region in st.session_state.df["지역"].unique():
+            st.warning("이미 존재하는 지역입니다.")
+        else:
+            new_row = pd.DataFrame([{col: None for col in st.session_state.df.columns}])
+            new_row["지역"] = new_region
+            st.session_state.df = pd.concat([st.session_state.df, new_row], ignore_index=True)
+            st.success("지역이 성공적으로 추가되었습니다.")
+
 st.title("강생도 2.0")
 st.write("엑셀 파일을 업로드하면 장소 데이터를 확인할 수 있습니다.")
 
 df = load_file()
 
 if df is not None:
+    if "df" not in st.session_state:
+        st.session_state.df = df
+
     st.sidebar.markdown("---")
     st.sidebar.header("기능 메뉴")
     menu = st.sidebar.radio(
         "원하는 기능을 선택하세요",
-        ["전체 데이터 보기", "조건별 장소 검색"]
+        ["전체 데이터 보기", "조건별 장소 검색", "지역 추가"]
     )
     st.sidebar.markdown("---")
     
     if menu == "전체 데이터 보기":
-        print_table(df, "업로드한 장소 데이터 전체 목록")
+        print_table(st.session_state.df, "업로드한 장소 데이터 전체 목록")
         
     elif menu == "조건별 장소 검색":
-        result = get_user_input(df)
-        show_filter_places(result, df)
+        result = get_user_input(st.session_state.df)
+        show_filter_places(result, st.session_state.df)
+
+    elif menu == "지역 추가":
+        add_region_ui()
