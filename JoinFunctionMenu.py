@@ -49,7 +49,7 @@ def search_recommendations(df):
         step=1000
     )
 
-    min_rating = st.slider(
+    min_rating = st.number_input(
         "최소 평점 선택",
         min_value=0.0,
         max_value=5.0,
@@ -74,10 +74,20 @@ def search_recommendations(df):
         (df["추천목적"] == selected_purpose) &
         (df["추천상황"] == selected_situation) &
         (df["추천대상"] == selected_target) &
-        (df["예산"] <= selected_budget) &
-        (df["평점"] >= min_rating) &
-        (df["최대소요시간"] <= max_time)
+        (df["예산"] <= selected_budget)
     )
+
+    if "평점" in df.columns:
+        condition = condition & (df["평점"] >= min_rating)
+
+    time_col = None
+    for col in df.columns:
+        if "소요시간" in col:
+            time_col = col
+            break
+
+    if time_col:
+        condition = condition & (df[time_col] <= max_time)
 
     if need_reservation != "전체":
         condition = condition & (df["예약필요"] == need_reservation)
