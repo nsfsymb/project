@@ -80,19 +80,35 @@ def search_recommendations(df):
     if "평점" in df.columns:
         condition = condition & (df["평점"] >= min_rating)
 
+    if need_reservation != "전체":
+        condition = condition & (df["예약필요"] == need_reservation)
+
+    result = df[condition]
+
     time_col = None
     for col in df.columns:
         if "소요시간" in col:
             time_col = col
             break
 
-    if time_col:
-        condition = condition & (df[time_col] <= max_time)
-
-    if need_reservation != "전체":
-        condition = condition & (df["예약필요"] == need_reservation)
-
-    result = df[condition]
+    if time_col and not result.empty:
+        valid_indices = []
+        for idx, row in result.iterrows():
+            time_val = str(row[time_col])
+            minutes = 0
+            if "30분" in time_val:
+                minutes = 30
+            elif "1시간" in time_val or "1~2시간" in time_val:
+                minutes = 60
+            elif "2시간" in time_val or "2~3시간" in time_val:
+                minutes = 120
+            elif "3시간" in time_val:
+                minutes = 180
+            
+            if minutes <= max_time:
+                valid_indices.append(idx)
+        
+        result = result.loc[valid_indices]
 
     st.subheader("검색 결과")
 
@@ -167,3 +183,4 @@ if uploaded_file is not None:
 
     elif menu == "데이터 시각화":
         show_chart(merged_df)
+        
