@@ -49,13 +49,40 @@ def search_recommendations(df):
         step=1000
     )
 
-    result = df[
+    min_rating = st.slider(
+        "최소 평점 선택",
+        min_value=0.0,
+        max_value=5.0,
+        value=0.0,
+        step=0.1
+    )
+
+    need_reservation = st.selectbox(
+        "예약 필요 여부",
+        ["전체"] + list(df["예약필요"].dropna().unique())
+    )
+
+    max_time = st.number_input(
+        "최대 소요 시간 (분)",
+        min_value=0,
+        value=180,
+        step=10
+    )
+
+    condition = (
         (df["지역"] == selected_region) &
         (df["추천목적"] == selected_purpose) &
         (df["추천상황"] == selected_situation) &
         (df["추천대상"] == selected_target) &
-        (df["예산"] <= selected_budget)
-    ]
+        (df["예산"] <= selected_budget) &
+        (df["평점"] >= min_rating) &
+        (df["최대소요시간"] <= max_time)
+    )
+
+    if need_reservation != "전체":
+        condition = condition & (df["예약필요"] == need_reservation)
+
+    result = df[condition]
 
     st.subheader("검색 결과")
 
@@ -96,32 +123,6 @@ def show_summary_dashboard(df):
     st.dataframe(unique_places[available_cols])
 
 
-def show_detailed_info(df):
-    st.subheader("🔍 장소별 개별 상세 안내")
-    
-    name_col = "장소명" if "장소명" in df.columns else ("장소이름" if "장소이름" in df.columns else "place_id")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        reg = st.selectbox("지역 필터", df["지역"].unique(), key="info_reg")
-    with col2:
-        category = st.selectbox("유형 필터", df["유형"].unique(), key="info_cat")
-        
-    filtered = df[(df["지역"] == reg) & (df["유형"] == category)]
-    
-    if not filtered.empty:
-        for idx, row in filtered.drop_duplicates(subset=[name_col]).iterrows():
-            display_name = row[name_col]
-            with st.expander(f" {display_name} ({row['예약필요']})"):
-                if "한줄소개" in df.columns:
-                    st.write(f"**한줄 소개:** {row['한줄소개']}")
-                st.write(f"**비용/예산:** {row['예산']}원")
-                st.write(f"**추천 대상:** {row['추천대상']}")
-                st.write(f"**추천 목적:** {row['추천목적']}")
-    else:
-        st.info("선택한 조건의 장소가 존재하지 않습니다.")
-
-
 uploaded_file = st.file_uploader(
     "엑셀 파일을 업로드하세요",
     type=["xlsx"]
@@ -138,7 +139,6 @@ if uploaded_file is not None:
             "원본 데이터 보기", 
             "조인 데이터 보기", 
             "추천 검색", 
-            "장소별 상세 안내",
             "데이터 시각화"
         ]
     )
@@ -154,9 +154,6 @@ if uploaded_file is not None:
 
     elif menu == "추천 검색":
         search_recommendations(merged_df)
-        
-    elif menu == "장소별 상세 안내":
-        show_detailed_info(merged_df)
 
     elif menu == "데이터 시각화":
         show_chart(merged_df)
