@@ -81,7 +81,8 @@ def show_chart(df):
 def show_summary_dashboard(df):
     st.subheader("장소 등록 현황")
     
-    unique_places = df.drop_duplicates(subset=["장소명"])
+    name_col = "장소명" if "장소명" in df.columns else ("장소이름" if "장소이름" in df.columns else "place_id")
+    unique_places = df.drop_duplicates(subset=[name_col])
     
     col1, col2 = st.columns(2)
     with col1:
@@ -91,11 +92,14 @@ def show_summary_dashboard(df):
         
     st.markdown("---")
     st.subheader("등록된 장소 전체 요약 정보")
-    st.dataframe(unique_places[["장소명", "지역", "유형", "예약필요", "한줄소개"]])
+    available_cols = [col for col in [name_col, "지역", "유형", "예약필요", "한줄소개"] if col in df.columns]
+    st.dataframe(unique_places[available_cols])
 
 
 def show_detailed_info(df):
     st.subheader("🔍 장소별 개별 상세 안내")
+    
+    name_col = "장소명" if "장소명" in df.columns else ("장소이름" if "장소이름" in df.columns else "place_id")
     
     col1, col2 = st.columns(2)
     with col1:
@@ -106,9 +110,11 @@ def show_detailed_info(df):
     filtered = df[(df["지역"] == reg) & (df["유형"] == category)]
     
     if not filtered.empty:
-        for idx, row in filtered.drop_duplicates(subset=["장소명"]).iterrows():
-            with st.expander(f"📍 {row['장소명']} ({row['예약필요']})"):
-                st.write(f"**한줄 소개:** {row['한줄소개']}")
+        for idx, row in filtered.drop_duplicates(subset=[name_col]).iterrows():
+            display_name = row[name_col]
+            with st.expander(f" {display_name} ({row['예약필요']})"):
+                if "한줄소개" in df.columns:
+                    st.write(f"**한줄 소개:** {row['한줄소개']}")
                 st.write(f"**비용/예산:** {row['예산']}원")
                 st.write(f"**추천 대상:** {row['추천대상']}")
                 st.write(f"**추천 목적:** {row['추천목적']}")
