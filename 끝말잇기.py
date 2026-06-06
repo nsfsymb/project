@@ -1,47 +1,44 @@
-import tkinter as tk
+import streamlit as st
 
-# 1. 미리 입력해둔 한방 단어 데이터 (예시 추가)
-hanbang_dict = {
-    "가": ["가게른", "가녘", "가돌리늄", "가잠나룻"],
-    "나": ["나트륨", "나이오븀", "나프탈렌"],
-    "다": ["다이아몬드", "다이옥신"],
+# 페이지 기본 설정
+st.set_page_config(page_title="끝말잇기 치트키", page_icon="🤫", layout="centered")
+
+st.title("🤫 끝말잇기 한방단어 검색기")
+st.caption("한 글자만 입력하면 상대를 한방에 보내는 단어를 추천합니다.")
+
+# 강력한 한방단어 데이터베이스 (예시)
+# 실제 사용할 때 단어를 더 많이 추가할수록 치트키가 강력해집니다.
+HANBANG_DICT = {
+    "기": ["기쁨", "기름", "기륨"],
+    "나": ["나트륨", "나이오븀"],
+    "다": ["다이뮴", "다이아몬드"],
     "라": ["라듐", "라돈"],
-    "마": ["마그네슘"],
+    "마": ["마그네슘", "마이크로필름"],
+    "바": ["바륨", "바나듐"],
+    "사": ["사마륨", "사이클로트론"],
+    "아": ["아르곤", "아인슈타이늄"],
+    "자": ["자석", "자이로스코프"],
+    "차": ["차륨"],
+    "카": ["카드뮴", "칼슘", "칼리포늄"],
+    "타": ["타이타늄", "탄탈럼"],
+    "파": ["파라듐", "프로메튬"],
+    "하": ["하프늄", "하이드로늄"]
 }
 
-def check_word(event):
-    search_key = entry.get().strip() # 공백 제거
-    listbox.delete(0, tk.END) # 기존 리스트 초기화
+---
+
+# 검색창 구현 (글자 수가 바뀔 때마다 즉시 반영)
+user_input = st.text_input("시작하는 글자를 입력하세요 (딱 한 글자만!):", max_chars=1)
+
+if user_input:
+    # 입력한 글자로 시작하는 한방단어 찾기
+    recommendations = HANBANG_DICT.get(user_input, [])
     
-    if not search_key:
-        return
+    if recommendations:
+        st.success(f"**'{user_input}'**(으)로 시작하는 강력한 방어/공격 단어 발견!")
         
-    # 해당 글자로 시작하는 한방 단어가 데이터에 있는지 확인
-    if search_key in hanbang_dict:
-        for word in hanbang_dict[search_key]:
-            listbox.insert(tk.END, word)
+        # 보기 좋게 카드 형태로 출력
+        for word in recommendations:
+            st.info(f"💡 **{word}** (끝 단어 공격 유효)")
     else:
-        # 단어가 없을 때 안내 메시지
-        listbox.insert(tk.END, f"'{search_key}'로 시작하는")
-        listbox.insert(tk.END, "단어가 데이터에 없습니다.")
-
-# 2. 미니 화면 구성
-root = tk.Tk()
-root.title("한방 헬퍼")
-root.geometry("220x300") # 크기 살짝 조절
-root.attributes("-topmost", True) # 항상 위에 띄우기
-
-# 상단 안내 레이블
-label = tk.Label(root, text="글자를 입력하세요 (예: 가)", font=("맑은 고딕", 10))
-label.pack(pady=5)
-
-# 입력창
-entry = tk.Entry(root, font=("맑은 고딕", 14), justify="center")
-entry.pack(padx=10, pady=5)
-entry.bind("<KeyRelease>", check_word) # 글자가 입력될 때마다 실시간 검색
-
-# 단어 리스트 표시창
-listbox = tk.Listbox(root, font=("맑은 고딕", 12), selectmode=tk.SINGLE)
-listbox.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
-
-root.mainloop()
+        st.warning(f"앗, '{user_input}'로 시작하는 등록된 한방단어가 없습니다. 단어를 추가해보세요!")
