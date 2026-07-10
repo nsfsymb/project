@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 
-st.title("강원생활도우미앱 3.0 (개별 프로젝트 확장 버전)")
+st.title("강원생활도우미앱 (개별 프로젝트)")
 
 # ==========================================
 # [기존 레거시 코드] - 안전하게 보존
@@ -68,7 +68,7 @@ def search_recommendations(df):
         # [접점 / 인터페이스 연결] 
         # 기존 코드를 수정하지 않고, 검색 결과가 존재할 때 확장 기능을 하단에 호출.
         st.markdown("---")
-        st.subheader("🚀 [확장 기능] 가성비 기반 TOP N 추천")
+        st.subheader("가성비 기반 TOP 추천")
         
         # 가성비 추천을 받을 개수 선택 위젯
         top_n = st.slider("상위 몇 개의 가성비 장소를 볼까요?", min_value=1, max_value=max(1, len(result)), value=3)
@@ -102,18 +102,26 @@ def calculate_cost_effectiveness(result_df, top_n):
     - 제약조건: 기존 result_df 원본을 훼손하지 않기 위해 .copy() 사용
     - 제약조건: 예산이 0인 경우 나눗셈 에러 방지 (예산 + 1)
     """
-    # 원본 데이터 보호를 위한 카피
+# 원본 데이터 보호를 위한 카피
     extended_df = result_df.copy()
     
-    # 가성비 점수 산출 (평점 / (예산 + 1) * 1000) -> 가독성을 위해 1000을 곱함
-    # 만약 데이터에 '평점' 열이 없다면 에러를 예방하기 위한 예외처리 포함
+    # 데이터 개수 확인
+    available_count = len(extended_df)
+    
     if "평점" in extended_df.columns and "예산" in extended_df.columns:
+        # 가성비 점수 산출 (예산 0원 나눗셈 방지 처리)
         extended_df["가성비_점수"] = round(
             extended_df["평점"] / (extended_df["예산"] + 1) * 1000, 2
         )
-        # 가성비 점수 기준 내림차순 정렬 및 상위 N개 추출
+        # 가성비 점수 기준 내림차순 정렬
         extended_df = extended_df.sort_values(by="가성비_점수", ascending=False)
-        return extended_df.head(top_n)
+        
+        # 만약 실제 결과 개수가 사용자가 원하는 개수보다 적다면 안내하기
+        if available_count < top_n:
+            st.info(f"💡 해당 조건을 만족하는 장소가 총 {available_count}개뿐이므로, 검색된 모든 장소를 가성비 순으로 표시합니다.")
+            return extended_df
+        else:
+            return extended_df.head(top_n)
     else:
         st.error("데이터에 '평점' 또는 '예산' 열이 존재하지 않아 가성비를 계산할 수 없습니다.")
         return extended_df
