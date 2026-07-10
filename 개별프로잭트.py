@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🗺️ 강원생활도우미앱 3.0 (통합 검색 지원 버전)")
+st.title("🗺️ 강원생활도우미앱 3.0")
 st.markdown("---")
 
 # ==========================================
@@ -182,4 +182,4 @@ if uploaded_file is not None:
     elif "📊 데이터 시각화" in menu:
         show_chart(merged_df)
 else:
-    st.info("👋 시작하려면 왼쪽 사이드바에서 강원생활도우미 데이터가 들어있는 엑셀 파일(.xlsx)을 업로드해 주세요.")
+    st.info("시작하려면 왼쪽 사이드바에서 강원생활도우미 데이터가 들어있는 엑셀 파일을 업로드해 주세요.")
