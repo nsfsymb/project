@@ -1,14 +1,14 @@
 import streamlit as st
 import pandas as pd
 
-# 페이지 기본 설정 및 와이드 모드 적용 (화면 구성 개선)
+# 페이지 기본 설정 및 와이드 모드 적용
 st.set_page_config(
-    page_title="강원생활도우미앱",
+    page_title="강원생활도우미앱 3.0",
     page_icon="🗺️",
     layout="wide"
 )
 
-st.title("🗺️ 강원생활도우미앱 3.0 (개별 프로젝트)")
+st.title("🗺️ 강원생활도우미앱 3.0 (통합 검색 지원 버전)")
 st.markdown("---")
 
 # ==========================================
@@ -32,7 +32,6 @@ def join_data(place_df, recommend_df):
 
 
 def show_original_data(place_df, recommend_df):
-    # 화면 구성 개선: 탭(Tab)을 활용하여 화면을 깔끔하게 분할
     tab1, tab2 = st.tabs(["📊 장소정보 시트", "📋 추천정보 시트"])
     with tab1:
         st.dataframe(place_df, use_container_width=True)
@@ -45,8 +44,12 @@ def show_joined_data(df):
     st.dataframe(df, use_container_width=True)
 
 
+# ==========================================
+# [기능 개선 및 확장 코드] - '전체' 선택 로직 반영
+# ==========================================
+
 def search_recommendations(df):
-    st.subheader("🔍 맞춤형 추천 장소 검색")
+    st.subheader("🔍 맞춤형 추천 장소 검색 (조건에 '전체' 선택 가능)")
 
     # [개선] 각 선택 항목의 고유 값 리스트 앞에 "전체"를 추가합니다.
     regions = ["전체"] + list(df["지역"].dropna().unique())
@@ -70,32 +73,35 @@ def search_recommendations(df):
         step=1000
     )
 
-    # 1차 필터링 수행
-    result = df[
-        (df["지역"] == selected_region) &
-        (df["추천목적"] == selected_purpose) &
-        (df["추천상황"] == selected_situation) &
-        (df["추천대상"] == selected_target) &
-        (df["예산"] <= selected_budget)
-    ]
+    # [핵심 확장] '전체'를 선택했을 때의 필터링 우회 로직 설계
+    # 기본적으로 예산 조건을 먼저 만족하는 데이터를 복사해온 뒤, 각 조건이 '전체'가 아닐 때만 필터를 누적 적용합니다.
+    result = df[df["예산"] <= selected_budget]
+
+    if selected_region != "전체":
+        result = result[result["지역"] == selected_region]
+        
+    if selected_purpose != "전체":
+        result = result[result["추천목적"] == selected_purpose]
+        
+    if selected_situation != "전체":
+        result = result[result["추천상황"] == selected_situation]
+        
+    if selected_target != "전체":
+        result = result[result["추천대상"] == selected_target]
 
     st.markdown("### 📋 검색 결과")
 
     if len(result) > 0:
-        # ----------------------------------------------------
-        # [접점 / 인터페이스 연결] 
-        # 기존 코드를 깨뜨리지 않고, 검색 결과가 있을 때 새 확장 함수를 자연스럽게 결합
-        # ----------------------------------------------------
         st.info(f"💡 조건에 맞는 장소를 총 {len(result)}개 찾았습니다. 정렬 기준을 선택해보세요.")
         
-        # 신규 확장 기능인 '정렬 옵션 위젯' 배치
+        # 정렬 옵션 위젯
         sort_option = st.radio(
             "🔽 원하는 정렬 방식을 선택하세요",
             ["기본 순서", "평점 높은 순 ⭐", "예산 낮은 순 💵"],
             horizontal=True
         )
         
-        # 신규 확장 함수 호출 및 결과 출력
+        # 정렬 확장 함수 호출 및 결과 출력
         sorted_result = sort_places_data(result, sort_option)
         st.dataframe(sorted_result, use_container_width=True)
         
@@ -113,7 +119,6 @@ def show_chart(df):
 
     chart_data = df[chart_option].value_counts()
     
-    # 화면 구성 개선: 차트와 요약 수치를 좌우 배치로 깔끔하게 정돈
     ccol1, ccol2 = st.columns([2, 1])
     with ccol1:
         st.bar_chart(chart_data)
@@ -122,14 +127,9 @@ def show_chart(df):
         st.dataframe(chart_data)
 
 
-# ==========================================
-# [신규 확장 코드] - 정렬 및 품질 보증을 위한 독립 함수
-# ==========================================
-
 def sort_places_data(result_df, option):
     """
     [확장 기능] 사용자가 선택한 조건에 맞춰 결과를 정렬하여 반환하는 함수
-    - 제약조건: 원본 데이터프레임을 안전하게 유지하기 위해 .copy() 사용
     """
     sorted_df = result_df.copy()
     
@@ -152,11 +152,8 @@ def sort_places_data(result_df, option):
 # [메인 실행 흐름 및 사이드바 레이아웃]
 # ==========================================
 
-# 사이드바 화면 구성 개선
 with st.sidebar:
-    st.image("https://images.unsplash.com/photo-1621259182978-f09e5e24d90d?q=80&w=200", width=100) # 가상의 강원 지도/여가 이미지 플레이스홀더
     st.title("메뉴 컨트롤러")
-    
     uploaded_file = st.file_uploader(
         "📂 데이터베이스 엑셀 파일(.xlsx)",
         type=["xlsx"]
@@ -169,7 +166,6 @@ with st.sidebar:
             ["🏠 원본 데이터 보기", "🔗 조인 데이터 보기", "🔍 추천 검색", "📊 데이터 시각화"]
         )
 
-# 파일 업로드 성공 후 처리
 if uploaded_file is not None:
     place_df, recommend_df = load_data(uploaded_file)
     merged_df = join_data(place_df, recommend_df)
@@ -186,5 +182,4 @@ if uploaded_file is not None:
     elif "📊 데이터 시각화" in menu:
         show_chart(merged_df)
 else:
-    # 파일을 아직 올리지 않았을 때 안내 화면 디자인 개선
     st.info("👋 시작하려면 왼쪽 사이드바에서 강원생활도우미 데이터가 들어있는 엑셀 파일(.xlsx)을 업로드해 주세요.")
