@@ -1,7 +1,15 @@
 import streamlit as st
 import pandas as pd
 
-st.title("강원생활도우미앱 (개별 프로젝트)")
+# 페이지 기본 설정 및 와이드 모드 적용 (화면 구성 개선)
+st.set_page_config(
+    page_title="강원생활도우미앱",
+    page_icon="🗺️",
+    layout="wide"
+)
+
+st.title("🗺️ 강원생활도우미앱 3.0 (개별 프로젝트)")
+st.markdown("---")
 
 # ==========================================
 # [기존 레거시 코드] - 안전하게 보존
@@ -24,33 +32,39 @@ def join_data(place_df, recommend_df):
 
 
 def show_original_data(place_df, recommend_df):
-    st.subheader("장소정보 시트")
-    st.dataframe(place_df)
-
-    st.subheader("추천정보 시트")
-    st.dataframe(recommend_df)
+    # 화면 구성 개선: 탭(Tab)을 활용하여 화면을 깔끔하게 분할
+    tab1, tab2 = st.tabs(["📊 장소정보 시트", "📋 추천정보 시트"])
+    with tab1:
+        st.dataframe(place_df, use_container_width=True)
+    with tab2:
+        st.dataframe(recommend_df, use_container_width=True)
 
 
 def show_joined_data(df):
-    st.subheader("조인된 데이터")
-    st.dataframe(df)
+    st.subheader("🔗 조인 완료된 통합 데이터")
+    st.dataframe(df, use_container_width=True)
 
 
 def search_recommendations(df):
-    st.subheader("추천 장소 검색")
+    st.subheader("🔍 맞춤형 추천 장소 검색")
 
-    selected_region = st.selectbox("지역 선택", df["지역"].unique())
-    selected_purpose = st.selectbox("추천목적 선택", df["추천목적"].unique())
-    selected_situation = st.selectbox("추천상황 선택", df["추천상황"].unique())
-    selected_target = st.selectbox("추천대상 선택", df["추천대상"].unique())
+    # 화면 구성 개선: selectbox들을 한눈에 들어오도록 2열(Columns) 레이아웃으로 배치
+    col1, col2 = st.columns(2)
+    with col1:
+        selected_region = st.selectbox("📍 지역 선택", df["지역"].unique())
+        selected_purpose = st.selectbox("🎯 추천목적 선택", df["추천목적"].unique())
+    with col2:
+        selected_situation = st.selectbox("🎬 추천상황 선택", df["추천상황"].unique())
+        selected_target = st.selectbox("👥 추천대상 선택", df["추천대상"].unique())
 
     selected_budget = st.number_input(
-        "최대 예산",
+        "💰 최대 가용 예산 (원)",
         min_value=0,
         value=10000,
         step=1000
     )
 
+    # 1차 필터링 수행
     result = df[
         (df["지역"] == selected_region) &
         (df["추천목적"] == selected_purpose) &
@@ -59,99 +73,112 @@ def search_recommendations(df):
         (df["예산"] <= selected_budget)
     ]
 
-    st.subheader("검색 결과")
+    st.markdown("### 📋 검색 결과")
 
     if len(result) > 0:
-        st.dataframe(result)
-        
         # ----------------------------------------------------
         # [접점 / 인터페이스 연결] 
-        # 기존 코드를 수정하지 않고, 검색 결과가 존재할 때 확장 기능을 하단에 호출.
-        st.markdown("---")
-        st.subheader("가성비 기반 TOP 추천")
+        # 기존 코드를 깨뜨리지 않고, 검색 결과가 있을 때 새 확장 함수를 자연스럽게 결합
+        # ----------------------------------------------------
+        st.info(f"💡 조건에 맞는 장소를 총 {len(result)}개 찾았습니다. 정렬 기준을 선택해보세요.")
         
-        # 가성비 추천을 받을 개수 선택 위젯
-        top_n = st.slider("상위 몇 개의 가성비 장소를 볼까요?", min_value=1, max_value=max(1, len(result)), value=3)
+        # 신규 확장 기능인 '정렬 옵션 위젯' 배치
+        sort_option = st.radio(
+            "🔽 원하는 정렬 방식을 선택하세요",
+            ["기본 순서", "평점 높은 순 ⭐", "예산 낮은 순 💵"],
+            horizontal=True
+        )
         
-        # 신규 확장 함수 호출
-        enhanced_result = calculate_cost_effectiveness(result, top_n)
-        st.dataframe(enhanced_result)
+        # 신규 확장 함수 호출 및 결과 출력
+        sorted_result = sort_places_data(result, sort_option)
+        st.dataframe(sorted_result, use_container_width=True)
         
     else:
-        st.warning("조건에 맞는 추천 장소가 없습니다.")
+        st.warning("⚠️ 지정하신 조건에 맞는 추천 장소가 없습니다. 조건을 변경해 보세요.")
 
 
 def show_chart(df):
-    st.subheader("데이터 시각화")
+    st.subheader("📈 데이터 시각화 분석")
 
     chart_option = st.selectbox(
-        "시각화 기준 선택",
+        "📊 시각화 기준 열(Column) 선택",
         ["지역", "유형", "추천목적", "추천상황", "추천대상", "예약필요"]
     )
 
     chart_data = df[chart_option].value_counts()
-    st.bar_chart(chart_data)
+    
+    # 화면 구성 개선: 차트와 요약 수치를 좌우 배치로 깔끔하게 정돈
+    ccol1, ccol2 = st.columns([2, 1])
+    with ccol1:
+        st.bar_chart(chart_data)
+    with ccol2:
+        st.write("📋 **데이터 분포 요약**")
+        st.dataframe(chart_data)
 
 
 # ==========================================
-# [신규 확장 코드] - SDD에 기반한 새 함수 정의
+# [신규 확장 코드] - 정렬 및 품질 보증을 위한 독립 함수
+# ==========================================
 
-def calculate_cost_effectiveness(result_df, top_n):
+def sort_places_data(result_df, option):
     """
-    [확장 기능] 가성비 점수를 계산하고 상위 N개를 정렬하여 반환하는 함수
-    - 제약조건: 기존 result_df 원본을 훼손하지 않기 위해 .copy() 사용
-    - 제약조건: 예산이 0인 경우 나눗셈 에러 방지 (예산 + 1)
+    [확장 기능] 사용자가 선택한 조건에 맞춰 결과를 정렬하여 반환하는 함수
+    - 제약조건: 원본 데이터프레임을 안전하게 유지하기 위해 .copy() 사용
     """
-# 원본 데이터 보호를 위한 카피
-    extended_df = result_df.copy()
+    sorted_df = result_df.copy()
     
-    # 데이터 개수 확인
-    available_count = len(extended_df)
-    
-    if "평점" in extended_df.columns and "예산" in extended_df.columns:
-        # 가성비 점수 산출 (예산 0원 나눗셈 방지 처리)
-        extended_df["가성비_점수"] = round(
-            extended_df["평점"] / (extended_df["예산"] + 1) * 1000, 2
-        )
-        # 가성비 점수 기준 내림차순 정렬
-        extended_df = extended_df.sort_values(by="가성비_점수", ascending=False)
-        
-        # 만약 실제 결과 개수가 사용자가 원하는 개수보다 적다면 안내하기
-        if available_count < top_n:
-            st.info(f"💡 해당 조건을 만족하는 장소가 총 {available_count}개뿐이므로, 검색된 모든 장소를 가성비 순으로 표시합니다.")
-            return extended_df
+    if option == "평점 높은 순 ⭐":
+        if "평점" in sorted_df.columns:
+            return sorted_df.sort_values(by="평점", ascending=False)
         else:
-            return extended_df.head(top_n)
-    else:
-        st.error("데이터에 '평점' 또는 '예산' 열이 존재하지 않아 가성비를 계산할 수 없습니다.")
-        return extended_df
+            st.error("데이터에 '평점' 열이 존재하지 않습니다.")
+            
+    elif option == "예산 낮은 순 💵":
+        if "예산" in sorted_df.columns:
+            return sorted_df.sort_values(by="예산", ascending=True)
+        else:
+            st.error("데이터에 '예산' 열이 존재하지 않습니다.")
+            
+    return sorted_df
 
 
 # ==========================================
-# [메인 실행 흐름]
+# [메인 실행 흐름 및 사이드바 레이아웃]
+# ==========================================
 
-uploaded_file = st.file_uploader(
-    "엑셀 파일을 업로드하세요",
-    type=["xlsx"]
-)
+# 사이드바 화면 구성 개선
+with st.sidebar:
+    st.image("https://images.unsplash.com/photo-1621259182978-f09e5e24d90d?q=80&w=200", width=100) # 가상의 강원 지도/여가 이미지 플레이스홀더
+    st.title("메뉴 컨트롤러")
+    
+    uploaded_file = st.file_uploader(
+        "📂 데이터베이스 엑셀 파일(.xlsx)",
+        type=["xlsx"]
+    )
+    
+    st.markdown("---")
+    if uploaded_file is not None:
+        menu = st.sidebar.radio(
+            "🧭 바로가기 메뉴",
+            ["🏠 원본 데이터 보기", "🔗 조인 데이터 보기", "🔍 추천 검색", "📊 데이터 시각화"]
+        )
 
+# 파일 업로드 성공 후 처리
 if uploaded_file is not None:
     place_df, recommend_df = load_data(uploaded_file)
     merged_df = join_data(place_df, recommend_df)
 
-    menu = st.sidebar.radio(
-        "메뉴 선택",
-        ["원본 데이터 보기", "조인 데이터 보기", "추천 검색", "데이터 시각화"]
-    )
-
-    if menu == "원본 데이터 보기":
+    if "🏠 원본 데이터 보기" in menu:
         show_original_data(place_df, recommend_df)
 
-    elif menu == "조인 데이터 보기":
+    elif "🔗 조인 데이터 보기" in menu:
         show_joined_data(merged_df)
 
-    elif menu == "추천 검색":
+    elif "🔍 추천 검색" in menu:
         search_recommendations(merged_df)
 
-    elif menu == "데이터 시각화":
+    elif "📊 데이터 시각화" in menu:
         show_chart(merged_df)
+else:
+    # 파일을 아직 올리지 않았을 때 안내 화면 디자인 개선
+    st.info("👋 시작하려면 왼쪽 사이드바에서 강원생활도우미 데이터가 들어있는 엑셀 파일(.xlsx)을 업로드해 주세요.")
