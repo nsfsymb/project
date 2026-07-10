@@ -48,14 +48,20 @@ def show_joined_data(df):
 def search_recommendations(df):
     st.subheader("🔍 맞춤형 추천 장소 검색")
 
-    # 화면 구성 개선: selectbox들을 한눈에 들어오도록 2열(Columns) 레이아웃으로 배치
+    # [개선] 각 선택 항목의 고유 값 리스트 앞에 "전체"를 추가합니다.
+    regions = ["전체"] + list(df["지역"].dropna().unique())
+    purposes = ["전체"] + list(df["추천목적"].dropna().unique())
+    situations = ["전체"] + list(df["추천상황"].dropna().unique())
+    targets = ["전체"] + list(df["추천대상"].dropna().unique())
+
+    # 화면 구성 개선: 2열 레이아웃 배치
     col1, col2 = st.columns(2)
     with col1:
-        selected_region = st.selectbox("📍 지역 선택", df["지역"].unique())
-        selected_purpose = st.selectbox("🎯 추천목적 선택", df["추천목적"].unique())
+        selected_region = st.selectbox("📍 지역 선택", regions)
+        selected_purpose = st.selectbox("🎯 추천목적 선택", purposes)
     with col2:
-        selected_situation = st.selectbox("🎬 추천상황 선택", df["추천상황"].unique())
-        selected_target = st.selectbox("👥 추천대상 선택", df["추천대상"].unique())
+        selected_situation = st.selectbox("🎬 추천상황 선택", situations)
+        selected_target = st.selectbox("👥 추천대상 선택", targets)
 
     selected_budget = st.number_input(
         "💰 최대 가용 예산 (원)",
